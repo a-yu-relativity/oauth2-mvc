@@ -64,7 +64,7 @@ namespace MVC_App.Controllers
         private string Post(string url, string payload)
         {
             HttpClient httpClient = new HttpClient();
-            //httpClient.DefaultRequestHeaders.Add("X-CSRF-Header", "-");
+            httpClient.DefaultRequestHeaders.Add("X-CSRF-Header", "-");
             StringContent content = new StringContent(payload, System.Text.Encoding.UTF8, "application/json");
             HttpResponseMessage response = httpClient.PostAsync(url, content).Result;
             if (response != null && response.IsSuccessStatusCode)
