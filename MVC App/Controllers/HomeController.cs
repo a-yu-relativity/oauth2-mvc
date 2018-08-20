@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Web;
 using System.Web.Mvc;
 
@@ -53,6 +54,26 @@ namespace MVC_App.Controllers
         }
 
 
+        /// <summary>
+        /// Performs an HTTP post
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="payload"></param>
+        private string Post(string url, string payload)
+        {
+            HttpClient httpClient = new HttpClient();
+            //httpClient.DefaultRequestHeaders.Add("X-CSRF-Header", "-");
+            StringContent content = new StringContent(payload, System.Text.Encoding.UTF8, "application/json");
+            HttpResponseMessage response = httpClient.PostAsync(url, content).Result;
+            if (response != null)
+            {
+                string result = response.Content.ReadAsStringAsync().Result;
+                return result;
+            }
+            return String.Empty;
+        }
+
+
         public ActionResult Index()
         {
             if (String.IsNullOrEmpty(_bearerToken))
@@ -67,6 +88,15 @@ namespace MVC_App.Controllers
 
         public ActionResult Redirect()
         {
+            string url = Request.Url.AbsoluteUri;
+
+            // extract the value of the code
+            const string param = "code";
+            string code = this.GetParam(url, param);
+
+            // request for the token
+
+
             return View();
         }
 
