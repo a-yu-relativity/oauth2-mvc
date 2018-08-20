@@ -15,7 +15,7 @@ namespace MVC_App.Controllers
         private const string CLIENT_ID = "2b28a80c61ea80a08a5e7a7e24";
         private const string CLIENT_SECRET = "52a2e31b9c461e6a8ec874444fda5ce6a68b72ef";
         private const string SCOPE = "UserInfoAccess";
-        private const string REDIRECT_URI = "http://localhost:49203/authorize";
+        private const string REDIRECT_URI = "http://localhost:49203/home/authorize";
         private const string GRANT_TYPE = "code";
 
         private string _accessToken = String.Empty;

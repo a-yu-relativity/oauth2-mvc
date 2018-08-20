@@ -18,6 +18,12 @@ namespace MVC_App
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
+
+            //routes.MapRoute(
+            //    name: "Authorize",
+            //    url: "{controller}/{action}/{id}",
+            //    defaults: new { controller = "Home", action = "Authorize", id = UrlParameter.Optional }
+            //    );
         }
     }
 }
