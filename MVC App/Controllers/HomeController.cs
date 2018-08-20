@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -14,13 +15,14 @@ namespace MVC_App.Controllers
         private const string CLIENT_ID = "2b28a80c61ea80a08a5e7a7e24";
         private const string CLIENT_SECRET = "52a2e31b9c461e6a8ec874444fda5ce6a68b72ef";
         private const string SCOPE = "UserInfoAccess";
-        private const string REDIRECT_URI = "http://localhost:49203";
+        private const string REDIRECT_URI = "http://localhost:49203/authorize";
         private const string GRANT_TYPE = "code";
 
-
-        private string _bearerToken = String.Empty;
+        private string _accessToken = String.Empty;
 
         private string _refreshToken = String.Empty;
+
+        private string _tokenType = String.Empty;
 
         private string GetRedirectUri()
         {
@@ -65,7 +67,7 @@ namespace MVC_App.Controllers
             //httpClient.DefaultRequestHeaders.Add("X-CSRF-Header", "-");
             StringContent content = new StringContent(payload, System.Text.Encoding.UTF8, "application/json");
             HttpResponseMessage response = httpClient.PostAsync(url, content).Result;
-            if (response != null)
+            if (response != null && response.IsSuccessStatusCode)
             {
                 string result = response.Content.ReadAsStringAsync().Result;
                 return result;
@@ -76,7 +78,7 @@ namespace MVC_App.Controllers
 
         public ActionResult Index()
         {
-            if (String.IsNullOrEmpty(_bearerToken))
+            if (String.IsNullOrEmpty(_accessToken))
             {
                 string finalUrl = GetRedirectUri();
                 return Redirect(finalUrl);
@@ -86,7 +88,7 @@ namespace MVC_App.Controllers
         }
 
 
-        public ActionResult Redirect()
+        public ActionResult Authorize()
         {
             string url = Request.Url.AbsoluteUri;
 
@@ -95,7 +97,23 @@ namespace MVC_App.Controllers
             string code = this.GetParam(url, param);
 
             // request for the token
+            var jObject = new JObject
+            {
+                { "grant_type", "authorization_code" },
+                { "client_id", CLIENT_ID },
+                { "client_secret", CLIENT_SECRET },
+                { "code", code },
+                { "redirect_uri", REDIRECT_URI }
+            };
 
+            string json = jObject.ToString();
+
+            string result = Post(TOKEN_URL, json);
+            if (!String.IsNullOrEmpty(result))
+            {
+                JObject credentials = JObject.Parse(result);
+                
+            }
 
             return View();
         }
