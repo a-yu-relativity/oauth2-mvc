@@ -18,11 +18,11 @@ namespace MVC_App.Controllers
         private const string REDIRECT_URI = "http://localhost:49203/home/authorize";
         private const string GRANT_TYPE = "code";
 
-        private string _accessToken = String.Empty;
+        private static string _accessToken = String.Empty;
 
-        private string _refreshToken = String.Empty;
+        private static string _refreshToken = String.Empty;
 
-        private string _tokenType = String.Empty;
+        private static string _tokenType = String.Empty;
 
         private string GetRedirectUri()
         {
@@ -64,7 +64,7 @@ namespace MVC_App.Controllers
         private string Post(string url, string payload)
         {
             HttpClient httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("X-CSRF-Header", "-");
+            //httpClient.DefaultRequestHeaders.Add("X-CSRF-Header", "-");
             StringContent content = new StringContent(payload, System.Text.Encoding.UTF8, "application/json");
             HttpResponseMessage response = httpClient.PostAsync(url, content).Result;
             if (response != null && response.IsSuccessStatusCode)
@@ -96,8 +96,7 @@ namespace MVC_App.Controllers
             const string param = "code";
             string code = this.GetParam(url, param);
 
-            // request for the token
-            var jObject = new JObject
+            var body = new Dictionary<string, string>
             {
                 { "grant_type", "authorization_code" },
                 { "client_id", CLIENT_ID },
@@ -106,16 +105,28 @@ namespace MVC_App.Controllers
                 { "redirect_uri", REDIRECT_URI }
             };
 
-            string json = jObject.ToString();
-
-            string result = Post(TOKEN_URL, json);
-            if (!String.IsNullOrEmpty(result))
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Post, TOKEN_URL)
             {
-                JObject credentials = JObject.Parse(result);
-                
+                Content = new FormUrlEncodedContent(body)
+            };
+
+            HttpResponseMessage result = client.SendAsync(request).Result;
+
+            if (result != null && result.IsSuccessStatusCode)
+            {
+                string output = result.Content.ReadAsStringAsync().Result;
+
+                // parse result
+                JObject parsedJson = JObject.Parse(output);
+                _tokenType = parsedJson["token_type"].ToString();
+                _accessToken = parsedJson["access_token"].ToString();
+
+                // redirect to home page if successful
+                return Redirect(Url.Content("~/"));
             }
 
-            return View();
+            return About();
         }
 
         public ActionResult About()
