@@ -6,7 +6,7 @@ First, create an OAuth2 Client in the Relativity UI. You may name it whatever yo
 
 [Creating an OAuth2 Client](https://help.relativity.com/9.6/Content/Relativity/Authentication/OAuth2_clients.htm#Creating)
 
-Inside [HomeController.cs](Controllers/HomeController.cs), replace the constants with your actual credentials:
+Inside [HomeController.cs](/MVC%20App/Controllers/HomeController.cs#L13), replace the constants with your actual credentials:
 
 ```C#
 private const string AUTH_URL = "https://relativity-instance/Relativity/Identity/connect/authorize";
