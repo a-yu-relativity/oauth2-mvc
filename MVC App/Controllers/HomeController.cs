@@ -126,7 +126,7 @@ namespace MVC_App.Controllers
                 return Redirect(Url.Content("~/"));
             }
 
-            return About();
+            return NotAuthorized();
         }
 
         public ActionResult About()
@@ -140,6 +140,13 @@ namespace MVC_App.Controllers
         {
             ViewBag.Message = "Your contact page.";
 
+            return View();
+        }
+
+
+        public ActionResult NotAuthorized()
+        {
+            ViewBag.Message = "Access denied";
             return View();
         }
     }
