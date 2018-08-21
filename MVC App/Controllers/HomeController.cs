@@ -10,10 +10,10 @@ namespace MVC_App.Controllers
 {
     public class HomeController : Controller
     {
-        private const string AUTH_URL = "https://p-dv-vm-two7bin.kcura.corp/Relativity/Identity/connect/authorize";
-        private const string TOKEN_URL = "https://p-dv-vm-two7bin.kcura.corp/Relativity/Identity/connect/token";
-        private const string CLIENT_ID = "2b28a80c61ea80a08a5e7a7e24";
-        private const string CLIENT_SECRET = "52a2e31b9c461e6a8ec874444fda5ce6a68b72ef";
+        private const string AUTH_URL = "https://relativity-instance/Relativity/Identity/connect/authorize";
+        private const string TOKEN_URL = "https://relativity-instance/Relativity/Identity/connect/token";
+        private const string CLIENT_ID = "MY CLIENT ID";
+        private const string CLIENT_SECRET = "MY CLIENT SECRET";
         private const string SCOPE = "UserInfoAccess";
         private const string REDIRECT_URI = "http://localhost:49203/home/authorize";
         private const string GRANT_TYPE = "code";
