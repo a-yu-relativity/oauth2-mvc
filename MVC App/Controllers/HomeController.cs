@@ -5,15 +5,21 @@ using System.Linq;
 using System.Net.Http;
 using System.Web;
 using System.Web.Mvc;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace MVC_App.Controllers
 {
     public class HomeController : Controller
     {
-        private const string AUTH_URL = "https://relativity-instance/Relativity/Identity/connect/authorize";
-        private const string TOKEN_URL = "https://relativity-instance/Relativity/Identity/connect/token";
-        private const string CLIENT_ID = "MY CLIENT ID";
-        private const string CLIENT_SECRET = "MY CLIENT SECRET";
+        private const string BASE_URL = "https://instance";
+        private static string AUTH_URL = BASE_URL + "/Relativity/Identity/connect/authorize";
+        private static string TOKEN_URL = BASE_URL + "/Relativity/Identity/connect/token";
+        private static string VALIDATE_URL = BASE_URL + "/Relativity/Identity//connect/accesstokenvalidation";
+        private const string CLIENT_ID = "your-client-id";
+        private const string CLIENT_SECRET = "your-client-secret";
         private const string SCOPE = "UserInfoAccess";
         private const string REDIRECT_URI = "http://localhost:49203/home/authorize";
         private const string GRANT_TYPE = "code";
@@ -76,6 +82,51 @@ namespace MVC_App.Controllers
         }
 
 
+        /// <summary>
+        /// Performs an HTTP GET
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        private string Get(string url)
+        {
+            HttpClient httpClient = new HttpClient();           
+            HttpResponseMessage response = httpClient.GetAsync(url).Result;
+            if (response != null && response.IsSuccessStatusCode)
+            {
+                string result = response.Content.ReadAsStringAsync().Result;
+                return result;
+            }
+            return String.Empty;
+        }
+
+        private bool ValidateToken(string token, out string username)
+        {
+            username = "";
+
+            var uriBuilder = new UriBuilder(VALIDATE_URL);
+            System.Collections.Specialized.NameValueCollection query = HttpUtility.ParseQueryString(uriBuilder.Query);
+            query["token"] = token;
+
+            uriBuilder.Query = query.ToString();
+            string finalUrl = uriBuilder.ToString();
+            string result = this.Get(finalUrl);
+
+            // get the username
+            try
+            {
+                JObject parsed = JObject.Parse(result);
+                username = parsed["rel_un"].ToString();
+            }
+            catch (JsonReaderException jre)
+            {
+                // display/log error
+                return false;
+            }
+
+            return true;
+        }
+
+
         public ActionResult Index()
         {
             if (String.IsNullOrEmpty(_accessToken))
@@ -90,6 +141,7 @@ namespace MVC_App.Controllers
 
         public ActionResult Authorize()
         {
+            
             string url = Request.Url.AbsoluteUri;
 
             // extract the value of the code
@@ -122,25 +174,14 @@ namespace MVC_App.Controllers
                 _tokenType = parsedJson["token_type"].ToString();
                 _accessToken = parsedJson["access_token"].ToString();
 
+                string username;
+                ValidateToken(_accessToken, out username);
+
                 // redirect to home page if successful
                 return Redirect(Url.Content("~/"));
             }
 
             return NotAuthorized();
-        }
-
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
         }
 
 
