@@ -15,9 +15,9 @@ namespace MVC_App.Controllers
     public class HomeController : Controller
     {
         private const string BASE_URL = "https://instance";
-        private static string AUTH_URL = BASE_URL + "/Relativity/Identity/connect/authorize";
-        private static string TOKEN_URL = BASE_URL + "/Relativity/Identity/connect/token";
-        private static string VALIDATE_URL = BASE_URL + "/Relativity/Identity//connect/accesstokenvalidation";
+        private static readonly string AUTH_URL = BASE_URL + "/Relativity/Identity/connect/authorize";
+        private static readonly string TOKEN_URL = BASE_URL + "/Relativity/Identity/connect/token";
+        private static readonly string VALIDATE_URL = BASE_URL + "/Relativity/Identity//connect/accesstokenvalidation";
         private const string CLIENT_ID = "your-client-id";
         private const string CLIENT_SECRET = "your-client-secret";
         private const string SCOPE = "UserInfoAccess";
